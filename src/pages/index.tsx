@@ -1,14 +1,12 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import Head from "next/head";
-
-import { api } from "~/utils/api";
+import { Button } from "~/components/shadcn/button";
 
 export default function Home() {
-  const hello = api.post.hello.useQuery({ text: "from tRPC" });
+  // const hello = api.post.hello.useQuery({ text: "from tRPC" });
 
   return (
-    <>
-      <main>Hello</main>
-    </>
+    <main>
+      Hello
+      <Button variant={"destructive"}>Hello</Button>
+    </main>
   );
 }
