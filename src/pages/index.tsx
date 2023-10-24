@@ -1,22 +1,16 @@
 import PairHeader from "~/components/PairHeader";
-import type Pair from "~/interfaces/Pair";
 
 
 export default function Home() {
   // const hello = api.post.hello.useQuery({ text: "from tRPC" });
-  const pair: Pair = {
-    name: "XDCPerp/USDC",
-    price: 0,
-    change: 0,
-    high: 0,
-    low: 0
-  };
 
   return (
     <main className="container mx-auto mb-8 mt-4 grid w-full grow grid-cols-4 gap-4">
       <div className="col-span-3 flex flex-col items-start justify-start gap-3 ">
         {/* table with bid and asks here */}
-        <div className="min-h-[10vh] w-full rounded-md p-8 ring ring-white"></div>
+        <div className="min-h-[10vh] w-full rounded-md p-8 ring ring-white">
+          <PairHeader pair={defaultPair}/>
+        </div>
         <div className="min-h-[45vh] w-full rounded-md p-8 ring ring-white">
           The chart goes here
         </div>
@@ -66,6 +60,7 @@ import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import History from "~/components/History";
 import useHistoryStore from "~/stores/history";
+import { defaultPair } from "~/utils/constants";
 
 const Buy = () => {
   const increase = useHistoryStore((state) => state.addOneItem);
