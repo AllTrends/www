@@ -58,13 +58,22 @@ import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import History from "~/components/History";
-import useHistoryStore from "~/stores/history";
 import { defaultPair } from "~/utils/constants";
 import useTradesStore from "~/stores/tradesStore";
-import { ExecutedTrade } from "~/types";
+import { type ExecutedTrade } from "~/types";
+import { useAccount, useBalance } from "wagmi";
 
 const Buy = () => {
   const addTransaction = useTradesStore((state) => state.addTrade);
+  const { address, isConnecting, isDisconnected } = useAccount();
+
+  const {
+    data: balance,
+    isError: balanceError,
+    isLoading: balanceLoading,
+  } = useBalance({
+    address,
+  });
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -75,15 +84,22 @@ const Buy = () => {
       collateral: 1110,
       entry: 1.21,
       liquidation: 0,
-      markPrice: 1,
-      pnl: 100,
-      position: "long",
+      // pnl is a random number between -1000 and 1000
+      pnl: Math.floor(Math.random() * 2000) - 1000,
+      side: "long",
       size: 0,
       timestamp: new Date().toISOString(),
     };
 
     addTransaction(trade);
     console.log("submit");
+  };
+
+  const setMaxAmount = () => {
+    console.log(balance);
+    if (!balance) return;
+    const input = document.getElementById("amount") as HTMLInputElement;
+    alert(balance.formatted);
   };
 
   return (
@@ -97,7 +113,13 @@ const Buy = () => {
           <Label htmlFor="amount">Amount</Label>
           <Input min={0} type="number" id="amount" placeholder="Amount" />
           <Label asChild className="-mt-1.5 place-self-end" htmlFor="amount">
-            <Button size={"sm"} variant={"link"}>
+            <Button
+              type="button"
+              onClick={setMaxAmount}
+              disabled={balanceLoading}
+              size={"sm"}
+              variant={"link"}
+            >
               max amount
             </Button>
           </Label>
