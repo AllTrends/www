@@ -1,6 +1,5 @@
 import PairHeader from "~/components/PairHeader";
 
-
 export default function Home() {
   // const hello = api.post.hello.useQuery({ text: "from tRPC" });
 
@@ -8,13 +7,13 @@ export default function Home() {
     <main className="container mx-auto mb-8 mt-4 grid w-full grow grid-cols-4 gap-4">
       <div className="col-span-3 flex flex-col items-start justify-start gap-3 ">
         {/* table with bid and asks here */}
-        <div className="min-h-[10vh] w-full rounded-md p-8 ring ring-white">
-          <PairHeader pair={defaultPair}/>
+        <div className="min-h-[10vh] w-full rounded-md bg-stone-900  ring-1 ring-stone-500">
+          <PairHeader pair={defaultPair} />
         </div>
-        <div className="min-h-[45vh] w-full rounded-md p-8 ring ring-white">
+        <div className="min-h-[45vh] w-full rounded-md bg-stone-900 p-8 ring-1 ring-stone-500">
           The chart goes here
         </div>
-        <div className="min-h-[20vh] w-full rounded-md p-8 ring ring-white">
+        <div className="min-h-[20vh] w-full rounded-md bg-stone-900 p-3 ring-1 ring-stone-500 ">
           <History />
         </div>
       </div>
@@ -30,7 +29,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 const TradingUi = () => {
   return (
     <Tabs defaultValue="buy">
-      <TabsList className="w-full">
+      <TabsList className="w-full ring-1 ring-stone-500">
         <TabsTrigger className="grow" value="buy">
           Buy
         </TabsTrigger>
@@ -61,19 +60,35 @@ import { Button } from "~/components/ui/button";
 import History from "~/components/History";
 import useHistoryStore from "~/stores/history";
 import { defaultPair } from "~/utils/constants";
+import useTradesStore from "~/stores/tradesStore";
+import { ExecutedTrade } from "~/types";
 
 const Buy = () => {
-  const increase = useHistoryStore((state) => state.addOneItem);
+  const addTransaction = useTradesStore((state) => state.addTrade);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    increase();
+    // create randomized trade
+    const trade: ExecutedTrade = {
+      hash: Math.random().toString(),
+      pair: defaultPair,
+      collateral: 1110,
+      entry: 1.21,
+      liquidation: 0,
+      markPrice: 1,
+      pnl: 100,
+      position: "long",
+      size: 0,
+      timestamp: new Date().toISOString(),
+    };
+
+    addTransaction(trade);
     console.log("submit");
   };
 
   return (
     <form
-      className="flex min-h-[60vh] flex-col items-start justify-start gap-4 rounded-md bg-slate-900 p-4 pb-8"
+      className="flex min-h-[60vh] flex-col items-start justify-start gap-4 rounded-md bg-stone-900 p-4 pb-8 ring-1 ring-stone-500"
       onSubmit={handleSubmit}
     >
       <div className="w-full grow">

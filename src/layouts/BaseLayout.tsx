@@ -5,7 +5,8 @@ import { Navbar } from "~/components";
 const BaseLayout: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
-  const bg = "bg-gradient-to-b from-gray-900 to-gray-600 bg-gradient-to-r";
+  const bg = "";
+  //"bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-gray-700 via-gray-900 to-black";
 
   return (
     <>
@@ -16,7 +17,7 @@ const BaseLayout: React.FC<{
       </Head>
       <div
         className={
-          "dark flex h-full min-h-screen w-full flex-col items-start justify-start text-white " +
+          "dark flex h-full min-h-screen w-full flex-col items-start justify-start text-white backdrop-brightness-[.15] " +
           bg
         }
       >
