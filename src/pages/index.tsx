@@ -10,7 +10,7 @@ export default function Home() {
           The chart goes here
         </div>
         <div className="min-h-[20vh] w-full rounded-md p-8 ring ring-white">
-          The Execution history goes here
+          <History />
         </div>
       </div>
       <div className="col-span-1 grid">
@@ -53,10 +53,15 @@ import {
 import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
+import History from "~/components/History";
+import useHistoryStore from "~/stores/history";
 
 const Buy = () => {
+  const increase = useHistoryStore((state) => state.addOneItem);
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    increase();
     console.log("submit");
   };
 
