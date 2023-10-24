@@ -1,5 +1,16 @@
+import PairHeader from "~/components/PairHeader";
+import type Pair from "~/interfaces/Pair";
+
+
 export default function Home() {
   // const hello = api.post.hello.useQuery({ text: "from tRPC" });
+  const pair: Pair = {
+    name: "XDCPerp/USDC",
+    price: 0,
+    change: 0,
+    high: 0,
+    low: 0
+  };
 
   return (
     <main className="container mx-auto mb-8 mt-4 grid w-full grow grid-cols-4 gap-4">
