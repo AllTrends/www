@@ -2,8 +2,14 @@ import { type AppType } from "next/app";
 
 import { api } from "~/utils/api";
 
+// Font (supports weights 400-700)
+import "@fontsource-variable/instrument-sans/wdth.css";
+
+// Styles
 import "~/styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
+
+// Misc
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";

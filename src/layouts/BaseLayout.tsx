@@ -1,4 +1,3 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import Head from "next/head";
 import React from "react";
 import { Navbar } from "~/components";

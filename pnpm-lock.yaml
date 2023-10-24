@@ -5,6 +5,9 @@ settings:
   excludeLinksFromLockfile: false
 
 dependencies:
+  '@fontsource-variable/instrument-sans':
+    specifier: ^5.0.3
+    version: 5.0.3
   '@rainbow-me/rainbowkit':
     specifier: ^1.1.2
     version: 1.1.2(@types/react@18.2.31)(react-dom@18.2.0)(react@18.2.0)(viem@1.16.6)(wagmi@1.4.5)
@@ -182,6 +185,10 @@ packages:
     resolution: {integrity: sha512-mjZVbpaeMZludF2fsWLD0Z9gCref1Tk4i9+wddjRvpUNqqcndPkBD09N/Mapey0b3jaXbLm2kICwFv2E64QinA==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     dev: true
+
+  /@fontsource-variable/instrument-sans@5.0.3:
+    resolution: {integrity: sha512-HlObrvApp8qftNZOS3My3aVHrj0hOMLETJ11GKEyPUB1XQB5+Lkts2SdfYQjgOZOQqvhXtwpvWPrn+uk+lCpgw==}
+    dev: false
 
   /@humanwhocodes/config-array@0.11.13:
     resolution: {integrity: sha512-JSBDMiDKSzQVngfRjOdFXgFfklaXI4K9nLF49Auh21lmBWRLIK3+xTErTWD4KU54pb6coM6ESE7Awz/FNU3zgQ==}
