@@ -6,7 +6,9 @@ const useHistoryStore = create<{
   removeAllItems: () => void;
 }>((set) => ({
   items: [0],
-  addOneItem: () => set((state) => ({ items: [...state.items, 0] })),
+  addOneItem: () => {
+    return set((state) => ({ items: [0, ...state.items] }));
+  },
   removeAllItems: () => set({ items: [] }),
 }));
 

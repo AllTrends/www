@@ -60,13 +60,29 @@ import { Button } from "~/components/ui/button";
 import History from "~/components/History";
 import useHistoryStore from "~/stores/history";
 import { defaultPair } from "~/utils/constants";
+import useTradesStore from "~/stores/tradesStore";
+import { ExecutedTrade } from "~/types";
 
 const Buy = () => {
-  const increase = useHistoryStore((state) => state.addOneItem);
+  const addTransaction = useTradesStore((state) => state.addTrade);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    increase();
+    // create randomized trade
+    const trade: ExecutedTrade = {
+      hash: Math.random().toString(),
+      pair: defaultPair,
+      collateral: 1110,
+      entry: 1.21,
+      liquidation: 0,
+      markPrice: 1,
+      pnl: 100,
+      position: "long",
+      size: 0,
+      timestamp: new Date().toISOString(),
+    };
+
+    addTransaction(trade);
     console.log("submit");
   };
 

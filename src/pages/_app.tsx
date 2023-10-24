@@ -10,7 +10,11 @@ import "~/styles/globals.css";
 import "@rainbow-me/rainbowkit/styles.css";
 
 // Misc
-import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import {
+  getDefaultWallets,
+  RainbowKitProvider,
+  darkTheme,
+} from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { xdcTestnet } from "viem/chains";
@@ -21,6 +25,11 @@ const MyApp: AppType = ({ Component, pageProps }) => {
     [xdcTestnet],
     [publicProvider()],
   );
+
+  const customRainbowTheme = darkTheme({
+    accentColor: "#0D0A09",
+    accentColorForeground: "#FAFAF9",
+  });
 
   const { connectors } = getDefaultWallets({
     appName: "MIAO",
@@ -36,7 +45,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
 
   return (
     <WagmiConfig config={wagmiConfig}>
-      <RainbowKitProvider chains={chains}>
+      <RainbowKitProvider chains={chains} theme={customRainbowTheme}>
         <BaseLayout>
           <Component {...pageProps} />
         </BaseLayout>
