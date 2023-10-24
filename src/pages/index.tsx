@@ -1,3 +1,4 @@
+import AutoanimateTest from "~/components/AutoanimateTest";
 import { Button } from "~/components/ui/button";
 import {
   Sheet,
@@ -12,7 +13,7 @@ export default function Home() {
   // const hello = api.post.hello.useQuery({ text: "from tRPC" });
 
   return (
-    <main>
+    <main className="flex flex-col items-start justify-start gap-8">
       Hello
       <Button variant={"destructive"}>Hello</Button>
     </main>

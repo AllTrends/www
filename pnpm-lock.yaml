@@ -8,6 +8,9 @@ dependencies:
   '@fontsource-variable/instrument-sans':
     specifier: ^5.0.3
     version: 5.0.3
+  '@formkit/auto-animate':
+    specifier: ^0.8.0
+    version: 0.8.0
   '@radix-ui/react-dialog':
     specifier: ^1.0.5
     version: 1.0.5(@types/react-dom@18.2.14)(@types/react@18.2.31)(react-dom@18.2.0)(react@18.2.0)
@@ -208,6 +211,10 @@ packages:
 
   /@fontsource-variable/instrument-sans@5.0.3:
     resolution: {integrity: sha512-HlObrvApp8qftNZOS3My3aVHrj0hOMLETJ11GKEyPUB1XQB5+Lkts2SdfYQjgOZOQqvhXtwpvWPrn+uk+lCpgw==}
+    dev: false
+
+  /@formkit/auto-animate@0.8.0:
+    resolution: {integrity: sha512-G8f7489ka0mWyi+1IEZT+xgIwcpWtRMmE2x+IrVoQ+KM1cP6VDj/TbujZjwxdb0P8w8b16/qBfViRmydbYHwMw==}
     dev: false
 
   /@humanwhocodes/config-array@0.11.13:
