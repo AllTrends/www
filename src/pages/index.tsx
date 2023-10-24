@@ -7,13 +7,13 @@ export default function Home() {
     <main className="container mx-auto mb-8 mt-4 grid w-full grow grid-cols-4 gap-4">
       <div className="col-span-3 flex flex-col items-start justify-start gap-3 ">
         {/* table with bid and asks here */}
-        <div className="min-h-[10vh] w-full rounded-md bg-stone-900  ring-1 ring-slate-100/5">
+        <div className="min-h-[10vh] w-full rounded-md bg-stone-900  ring-1 ring-stone-500">
           <PairHeader pair={defaultPair} />
         </div>
-        <div className="min-h-[45vh] w-full rounded-md bg-stone-900 p-8 ring-1 ring-slate-100/5">
+        <div className="min-h-[45vh] w-full rounded-md bg-stone-900 p-8 ring-1 ring-stone-500">
           The chart goes here
         </div>
-        <div className="min-h-[20vh] w-full rounded-md bg-stone-900 p-3 ring-1 ring-slate-100/5 ">
+        <div className="min-h-[20vh] w-full rounded-md bg-stone-900 p-3 ring-1 ring-stone-500 ">
           <History />
         </div>
       </div>
@@ -29,7 +29,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 const TradingUi = () => {
   return (
     <Tabs defaultValue="buy">
-      <TabsList className="w-full">
+      <TabsList className="w-full ring-1 ring-stone-500">
         <TabsTrigger className="grow" value="buy">
           Buy
         </TabsTrigger>
@@ -72,7 +72,7 @@ const Buy = () => {
 
   return (
     <form
-      className="flex min-h-[60vh] flex-col items-start justify-start gap-4 rounded-md bg-stone-900 p-4 pb-8"
+      className="flex min-h-[60vh] flex-col items-start justify-start gap-4 rounded-md bg-stone-900 p-4 pb-8 ring-1 ring-stone-500"
       onSubmit={handleSubmit}
     >
       <div className="w-full grow">

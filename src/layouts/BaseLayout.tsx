@@ -15,17 +15,15 @@ const BaseLayout: React.FC<{
         <meta name="description" content="A simple DEX" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="cssbackground absolute inset-0 -z-10">
-        <div
-          className={
-            "dark flex h-full min-h-screen w-full flex-col items-start justify-start text-white backdrop-brightness-[.15] " +
-            bg
-          }
-        >
-          <Navbar />
+      <div
+        className={
+          "dark flex h-full min-h-screen w-full flex-col items-start justify-start text-white backdrop-brightness-[.15] " +
+          bg
+        }
+      >
+        <Navbar />
 
-          {children}
-        </div>
+        {children}
       </div>
     </>
   );
