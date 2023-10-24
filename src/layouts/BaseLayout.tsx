@@ -6,16 +6,17 @@ const BaseLayout: React.FC<{
   children: React.ReactNode;
 }> = ({ children }) => {
   const bg = "bg-gradient-to-b from-gray-900 to-gray-600 bg-gradient-to-r";
+
   return (
     <>
       <Head>
-        <title>AT - Dex</title>
+        <title>AllDex</title>
         <meta name="description" content="A simple DEX" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div
         className={
-          "flex h-full min-h-screen w-full flex-col items-start justify-start " +
+          "dark flex h-full min-h-screen w-full flex-col items-start justify-start text-white " +
           bg
         }
       >
