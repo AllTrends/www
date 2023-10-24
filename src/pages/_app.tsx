@@ -8,6 +8,7 @@ import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { xdcTestnet } from "viem/chains";
+import BaseLayout from "~/layouts/BaseLayout";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   const { chains, publicClient } = configureChains(
@@ -30,7 +31,9 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider chains={chains}>
-        <Component {...pageProps} />
+        <BaseLayout>
+          <Component {...pageProps} />
+        </BaseLayout>
       </RainbowKitProvider>
     </WagmiConfig>
   );
