@@ -1,4 +1,5 @@
 import { type AppType } from "next/app";
+import { Toaster } from "react-hot-toast";
 
 import { api } from "~/utils/api";
 
@@ -46,6 +47,19 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider chains={chains} theme={customRainbowTheme}>
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            success: {
+              style: {
+                background: "#0D0A09",
+                color: "#FAFAF9",
+                border: "1px solid #FAFAF9",
+              },
+            },
+          }}
+        />
+
         <BaseLayout>
           <Component {...pageProps} />
         </BaseLayout>
