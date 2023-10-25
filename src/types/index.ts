@@ -24,3 +24,8 @@ export interface FinancialData {
   close: number;
   volume: number;
 }
+
+export interface D {
+  x: Date
+  y: number[]
+}

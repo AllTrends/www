@@ -1,22 +1,19 @@
 import React, { useEffect, useState } from "react";
 import dynamic from 'next/dynamic';
-import { defaultChartData } from "~/utils/constants";
 const ReactApexChart = dynamic(() => import('react-apexcharts'), {
   ssr: false,
 });
 import { SampleFinancialData } from "~/utils/financialData";
 import { Button } from "./ui/button";
+import useChartDataStore from "~/stores/chartDataStore";
 
 
 const FinancialChart = () => {
 
-    const [timeRange, setTimeRange] = useState(30);
+    const chartDataStore = useChartDataStore((state) => state.data);
 
-    const [chartData, setChartData] = useState(SampleFinancialData
-        .create(120, timeRange).map(e => ({
-            x: new Date(e.time),
-            y: [e.open, e.high, e.low, e.close],
-        })));
+    const [timeRange, setTimeRange] = useState(30);
+    const [chartData, setChartData] = useState(chartDataStore);
     const [chartHeight, setChartHeight] = useState(450);
 
     const state = {
@@ -56,7 +53,6 @@ const FinancialChart = () => {
 
     const changeTimeRange = (mins: number) => {
         setTimeRange(() => mins);
-        console.log(timeRange);
     };
 
     // Adjust chart height when the window resizes
