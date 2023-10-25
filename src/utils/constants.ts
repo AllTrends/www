@@ -5,6 +5,7 @@ const defaultPair: Pair = {
   denominator: "USDT",
 };
 
-const contractAddress = "0xf7FF85EB675096Da320eF4a6ad06393c91b07CD1";
+const contractAddress: `0x${string}` =
+  "0xf7FF85EB675096Da320eF4a6ad06393c91b07CD1";
 
 export { defaultPair, contractAddress };

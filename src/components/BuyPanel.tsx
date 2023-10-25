@@ -4,12 +4,7 @@ import { Button } from "~/components/ui/button";
 import { contractAddress, defaultPair } from "~/utils/constants";
 import useTradesStore from "~/stores/tradesStore";
 import { type ExecutedTrade } from "~/types";
-import {
-  useContractWrite,
-  type useBalance,
-  useAccount,
-  useContractRead,
-} from "wagmi";
+import { type useBalance, useWaitForTransaction } from "wagmi";
 import { Separator } from "~/components/ui/separator";
 import React from "react";
 import { Usdt, Xdc } from "~/components/icons";
@@ -161,7 +156,7 @@ const BuyPanel = ({
 
 export default BuyPanel;
 
-import { ArrowDown, Copy } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -171,6 +166,8 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { testABI } from "~/hooks/wagmi/config";
+import { useContractWrite, usePrepareContractWrite } from "wagmi";
+import toast from "react-hot-toast";
 
 const BuyDialog: React.FC<{
   children: React.ReactNode;
@@ -178,34 +175,55 @@ const BuyDialog: React.FC<{
   amount: string;
 }> = ({ children, collateral, amount }) => {
   const [open, setOpen] = React.useState(false);
+  const [txHash, setTxHash] = React.useState<`0x${string}`>();
 
-  const openDialog = () => setOpen(true);
-  const closeDialog = () => setOpen(false);
+  const closeModal = () => {
+    setOpen(false);
+    setTxHash(undefined);
+  };
 
-  const {
-    address,
-    isConnecting: accountLoading,
-    isDisconnected: accountDisconnected,
-  } = useAccount();
-
-  const { data, isLoading, isSuccess, write } = useContractWrite({
+  const { config } = usePrepareContractWrite({
     address: contractAddress,
     abi: testABI,
     functionName: "openPosition",
+    args: [10, 35000, 0],
   });
 
-  const {
-    data: openPositions,
-    isError: openPositionsError,
-    isLoading: openPositionsLoading,
-  } = useContractRead({
-    address: contractAddress,
-    abi: testABI,
-    functionName: "getPositions",
-    args: [],
+  const { writeAsync, isLoading: isPreparing } = useContractWrite(config);
+
+  // const {
+  //   data: openPositions,
+  //   isError: openPositionsError,
+  //   isLoading: openPositionsLoading,
+  // } = useContractRead({
+  //   address: contractAddress,
+  //   abi: testABI,
+  //   functionName: "getPositions",
+  //   args: [],
+  // });
+
+  const submit = async () => {
+    if (!writeAsync) return;
+
+    const { hash } = await writeAsync();
+    setTxHash(hash);
+  };
+
+  const { isLoading } = useWaitForTransaction({
+    hash: txHash,
+    onSettled(data, error) {
+      if (error) {
+        console.log(error);
+        toast.error("Something went wrong while placing your order :(");
+        return;
+      }
+      console.log(data);
+      toast.success("Your order has been placed!");
+      closeModal();
+    },
   });
 
-  console.log({ data: openPositions, isError: openPositionsError });
+  const disabled = !writeAsync || isLoading || isPreparing;
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -226,6 +244,9 @@ const BuyDialog: React.FC<{
           <Separator className="mt-1 bg-stone-200/40" />
 
           <ul className="mx-4 text-stone-400">
+            <li>
+              <button onClick={() => toast.success("lol")}>miao</button>
+            </li>
             <li>lol</li>
             <li>lol</li>
             <li>lol</li>
@@ -234,16 +255,13 @@ const BuyDialog: React.FC<{
         </div>
         <DialogFooter>
           <Button
-            onClick={() => {
-              write({
-                args: [10, 35000, 0],
-                from: address,
-              });
-            }}
+            disabled={disabled}
+            onClick={submit}
             variant={"secondary"}
             className="w-full"
           >
-            Send it!
+            {}
+            Buy / Long
           </Button>
         </DialogFooter>
       </DialogContent>
