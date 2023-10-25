@@ -196,8 +196,8 @@ const BuyDialog: React.FC<{
   } = useContractRead({
     address: contractAddress,
     abi: testABI,
-    functionName: "positions",
-    args: [0],
+    functionName: "getPositions",
+    args: [],
   });
 
   console.log({ data: openPositions, isError: openPositionsError });
