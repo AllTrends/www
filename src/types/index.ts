@@ -14,3 +14,13 @@ export interface ExecutedTrade {
   entry: number;
   liquidation: number;
 }
+
+export interface FinancialData {
+  time: number;
+  label: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
