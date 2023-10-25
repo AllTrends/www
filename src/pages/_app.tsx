@@ -20,6 +20,7 @@ import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { xdcTestnet } from "viem/chains";
 import BaseLayout from "~/layouts/BaseLayout";
+import { walletConnectProjectId } from "~/utils/constants";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   const { chains, publicClient } = configureChains(
@@ -35,7 +36,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   const { connectors } = getDefaultWallets({
     appName: "MIAO",
     chains,
-    projectId: "7171244509c2a41cb8e9e1fbc38a90b3",
+    projectId: walletConnectProjectId,
   });
 
   const wagmiConfig = createConfig({
