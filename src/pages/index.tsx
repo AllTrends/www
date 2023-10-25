@@ -1,5 +1,5 @@
 import PairHeader from "~/components/PairHeader";
-import FinancialChart from '~/components/FinancialChart'
+import FinancialChart from "~/components/FinancialChart";
 
 export default function Home() {
   // const hello = api.post.hello.useQuery({ text: "from tRPC" });
@@ -11,7 +11,7 @@ export default function Home() {
         <div className="min-h-[10vh] w-full rounded-md bg-stone-900  ring-1 ring-stone-500">
           <PairHeader pair={defaultPair} />
         </div>
-        <div className="min-h-[45vh] w-full rounded-md bg-stone-900 p-5 pl-3 ring-1 ring-stone-500 text-black">
+        <div className="min-h-[45vh] w-full rounded-md bg-stone-900 p-5 pl-3 text-black ring-1 ring-stone-500">
           <FinancialChart />
         </div>
         <div className="min-h-[20vh] w-full rounded-md bg-stone-900 p-3 ring-1 ring-stone-500 ">
@@ -88,7 +88,7 @@ const TradingUi = () => {
         <TabsContent value="buy" className="min-h-[60vh]">
           <BuyPanel balance={balance} />
         </TabsContent>
-        <TabsContent value="sell">
+        <TabsContent value="sell" className="min-h-[60vh]">
           <SellPanel balance={balance} />
         </TabsContent>
       </Tabs>
