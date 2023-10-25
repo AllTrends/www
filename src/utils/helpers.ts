@@ -19,5 +19,5 @@ export const formatWholePrice = (price: number) => {
  * gets a mock for the position given the collateral x1.1
  */
 export const getMockPosition = (collateral: string): string => {
-  return parseFloat(collateral) * 1.1 + "";
+  return Number(formatPrice(Number(collateral))) * 1.1 + "";
 };

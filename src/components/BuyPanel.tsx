@@ -1,10 +1,8 @@
 import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
-import { contractAddress, defaultPair } from "~/utils/constants";
-import useTradesStore from "~/stores/tradesStore";
-import { type ExecutedTrade } from "~/types";
-import { type useBalance, useWaitForTransaction } from "wagmi";
+import { contractAddress, currentPrice } from "~/utils/constants";
+import { type useBalance, useContractEvent } from "wagmi";
 import { Separator } from "~/components/ui/separator";
 import React from "react";
 import { Usdt, Xdc } from "~/components/icons";
@@ -15,28 +13,6 @@ const BuyPanel = ({
 }: {
   balance: ReturnType<typeof useBalance>["data"];
 }) => {
-  const addTransaction = useTradesStore((state) => state.addTrade);
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // create randomized trade
-    const trade: ExecutedTrade = {
-      hash: Math.random().toString(),
-      pair: defaultPair,
-      collateral: parseFloat(collateral),
-      entry: 1.21,
-      liquidation: 0,
-      // pnl is a random number between -1000 and 1000
-      pnl: Math.floor(Math.random() * 2000) - 1000,
-      side: "long",
-      size: parseFloat(amount),
-      timestamp: new Date().toISOString(),
-    };
-
-    addTransaction(trade);
-    console.log("submit");
-  };
-
   const setMaxAmount = () => {
     if (!balance) return;
     setCollateral(balance.formatted);
@@ -50,11 +26,12 @@ const BuyPanel = ({
   const handleCollateralChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // this need to be formatted as a number with decimals separated by a dot
     const value = e.target.value;
-    const regEx = /^[0-9]+(\.[0-9]{0,2})?$/;
+
+    const regEx = /^[0-9]*$/;
     if (value === "" || regEx.test(value)) {
       // check if the amount is more than the balance
       if (
-        value === "" ||
+        value === "0" ||
         (balance && parseFloat(value) > parseFloat(balance.formatted))
       ) {
         // if it is disable the buy btn
@@ -69,15 +46,12 @@ const BuyPanel = ({
         return;
       }
       // calculate the amount
-      setAmount(getMockPosition(value));
+      setAmount((parseFloat(value) * 1.1).toFixed(2).toString());
     }
   };
 
   return (
-    <form
-      className="relative flex  flex-col items-start justify-start gap-4 p-4"
-      onSubmit={handleSubmit}
-    >
+    <div className="relative flex  flex-col items-start justify-start gap-4 p-4">
       <div className="mb-9 flex w-full grow flex-col items-start justify-start gap-5">
         <div className="grid w-full max-w-sm items-center gap-1.5">
           <Label
@@ -150,7 +124,7 @@ const BuyPanel = ({
           </li>
         </ul>
       </div>
-    </form>
+    </div>
   );
 };
 
@@ -175,96 +149,110 @@ const BuyDialog: React.FC<{
   amount: string;
 }> = ({ children, collateral, amount }) => {
   const [open, setOpen] = React.useState(false);
-  const [txHash, setTxHash] = React.useState<`0x${string}`>();
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const closeModal = () => {
     setOpen(false);
-    setTxHash(undefined);
   };
 
-  const { config } = usePrepareContractWrite({
+  return (
+    <Dialog open={open} onOpenChange={(o) => (isLoading ? null : setOpen(o))}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      {collateral && amount && open && (
+        <BuyDialogContent
+          collateral={collateral}
+          amount={amount}
+          closeModal={closeModal}
+          setIsLoading={setIsLoading}
+          isLoading={isLoading}
+        />
+      )}
+    </Dialog>
+  );
+};
+
+const BuyDialogContent = ({
+  collateral,
+  amount,
+  closeModal,
+  setIsLoading,
+  isLoading,
+}: {
+  collateral: string;
+  amount: string;
+  closeModal: () => void;
+  setIsLoading: (b: boolean) => void;
+  isLoading: boolean;
+}) => {
+  useContractEvent({
     address: contractAddress,
     abi: testABI,
-    functionName: "openPosition",
-    args: [10, 35000, 0],
-  });
-
-  const { writeAsync, isLoading: isPreparing } = useContractWrite(config);
-
-  // const {
-  //   data: openPositions,
-  //   isError: openPositionsError,
-  //   isLoading: openPositionsLoading,
-  // } = useContractRead({
-  //   address: contractAddress,
-  //   abi: testABI,
-  //   functionName: "getPositions",
-  //   args: [],
-  // });
-
-  const submit = async () => {
-    if (!writeAsync) return;
-
-    const { hash } = await writeAsync();
-    setTxHash(hash);
-  };
-
-  const { isLoading } = useWaitForTransaction({
-    hash: txHash,
-    onSettled(data, error) {
-      if (error) {
-        console.log(error);
-        toast.error("Something went wrong while placing your order :(");
-        return;
-      }
-      console.log(data);
+    eventName: "PositionOpened",
+    listener(_position) {
+      setIsLoading(false);
       toast.success("Your order has been placed!");
       closeModal();
     },
   });
 
-  const disabled = !writeAsync || isLoading || isPreparing;
+  const { config } = usePrepareContractWrite({
+    address: contractAddress,
+    abi: testABI,
+    functionName: "openPosition",
+    // size, entryPrice, side (0 = long, 1 = short)
+    args: [collateral, currentPrice.toFixed(0), 0],
+  });
+  const { writeAsync, isLoading: isPreparing } = useContractWrite(config);
+
+  const submit = async () => {
+    if (!writeAsync) return;
+    setIsLoading(true);
+    try {
+      await writeAsync();
+    } catch (e) {
+      setIsLoading(false);
+      toast.error("Something went wrong");
+    }
+  };
+
+  const disabled = isLoading || isPreparing;
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-sm">
-        <DialogHeader>
-          <DialogTitle>Confirm Buy / Long</DialogTitle>
-        </DialogHeader>
-        <Separator className="bg-stone-200/40" />
-        <div className="flex min-h-[60vh] grow flex-col items-start justify-start gap-4  text-stone-100">
-          <div className="flex w-full flex-col items-center justify-center gap-2 px-8">
-            <h3 className="text-2xl">Pay {collateral} USDT</h3>
-            <ArrowDown size={24} />
-            <h3 className="text-2xl">
-              To buy {formatWholePrice(parseFloat(amount))} XDC
-            </h3>
-          </div>
-          <Separator className="mt-1 bg-stone-200/40" />
-
-          <ul className="mx-4 text-stone-400">
-            <li>
-              <button onClick={() => toast.success("lol")}>miao</button>
-            </li>
-            <li>lol</li>
-            <li>lol</li>
-            <li>lol</li>
-            <li>lol</li>
-          </ul>
+    <DialogContent className="sm:max-w-sm">
+      <DialogHeader>
+        <DialogTitle>Confirm Buy / Long</DialogTitle>
+      </DialogHeader>
+      <Separator className="bg-stone-200/40" />
+      <div className="flex min-h-[60vh] grow flex-col items-start justify-start gap-4  text-stone-100">
+        <div className="flex w-full flex-col items-center justify-center gap-2 px-8">
+          <h3 className="text-2xl">Pay {collateral} USDT</h3>
+          <ArrowDown size={24} />
+          <h3 className="text-2xl">
+            To buy {formatWholePrice(parseFloat(amount))} XDC
+          </h3>
         </div>
-        <DialogFooter>
-          <Button
-            disabled={disabled}
-            onClick={submit}
-            variant={"secondary"}
-            className="w-full"
-          >
-            {}
-            Buy / Long
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        <Separator className="mt-1 bg-stone-200/40" />
+
+        <ul className="mx-4 text-stone-400">
+          <li>
+            <button onClick={() => toast.success("lol")}>miao</button>
+          </li>
+          <li>lol</li>
+          <li>lol</li>
+          <li>lol</li>
+          <li>lol</li>
+        </ul>
+      </div>
+      <DialogFooter>
+        <Button
+          disabled={disabled}
+          onClick={submit}
+          variant={"secondary"}
+          className="w-full"
+        >
+          Buy / Long
+        </Button>
+      </DialogFooter>
+    </DialogContent>
   );
 };

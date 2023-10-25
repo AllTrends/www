@@ -3,9 +3,12 @@ import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
 import { Button } from "./ui/button";
 import { XIcon } from "lucide-react";
-import useTradesStore from "~/stores/tradesStore";
-import type { Pair } from "~/types";
+import type { Pair, Position } from "~/types";
 import { formatWholePrice } from "~/utils/helpers";
+import { useContractEvent } from "wagmi";
+import { contractAddress, currentPrice, defaultPair } from "~/utils/constants";
+import { testABI } from "~/hooks/wagmi/config";
+import usePositionsStore from "~/stores/positionsStore";
 
 const History = () => {
   return (
@@ -33,11 +36,47 @@ export default History;
 const Positions = () => {
   const [parent] = useAutoAnimate();
 
-  const trades = useTradesStore((state) => state.trades);
-  const closeTrade = useTradesStore((state) => state.removeTrade);
+  // const trades = useTradesStore((state) => state.trades);
+  // const closeTrade = useTradesStore((state) => state.removeTrade);
+
+  const positions = usePositionsStore((state) => state.positions);
+  const addPosition = usePositionsStore((state) => state.addPosition);
+  const removePosition = usePositionsStore((state) => state.removePosition);
 
   const pairObjToString = (pair: Pair) => {
     return `${pair.numerator.toUpperCase()}/${pair.denominator.toUpperCase()}`;
+  };
+
+  useContractEvent({
+    address: contractAddress,
+    abi: testABI,
+    eventName: "PositionOpened",
+
+    listener(res: unknown) {
+      // add trade to store
+      // @ts-expect-error TODO: fix this
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      const position = res[0].args as Position;
+
+      // pair and pnl are not included in the event
+      addPosition({
+        ...position,
+        entryPrice: Number(position.entryPrice),
+        size: Number(position.size),
+        side: Number(position.side) as 0 | 1,
+        pair: defaultPair,
+      });
+
+      console.log({ position });
+    },
+  });
+
+  const getPnl = (position: Position) => {
+    const { entryPrice, side } = position;
+    const pnl =
+      (side === 0 ? currentPrice - entryPrice : entryPrice - currentPrice) *
+      position.size;
+    return pnl;
   };
 
   return (
@@ -55,34 +94,34 @@ const Positions = () => {
         </tr>
       </thead>
       <tbody ref={parent}>
-        {trades.map((item) => (
+        {positions.map((item) => (
           <tr
-            key={item.hash}
+            key={item.positionId}
             className="relative rounded-sm ring-1 ring-stone-300/20"
           >
             <td className="text-center leading-8">
               {pairObjToString(item.pair)}
             </td>
-            <td className="text-center">{item.side}</td>
+            <td className="text-center">
+              {item.side === 0 ? "long" : "short"}
+            </td>
             <td
               className={
                 "text-center " +
-                (item.pnl >= 0 ? "text-green-400" : "text-red-400")
+                (getPnl(item) >= 0 ? "text-green-400" : "text-red-400")
               }
             >
-              {formatWholePrice(item.pnl)}
+              {formatWholePrice(getPnl(item))}
             </td>
             <td className="text-center">{formatWholePrice(item.size)}</td>
-            <td className="text-center">{formatWholePrice(item.collateral)}</td>
-            <td className="text-center">{formatWholePrice(item.entry)}</td>
-            <td className="text-center">
-              {formatWholePrice(item.liquidation)}
-            </td>
+            <td className="text-center">{"TBA"}</td>
+            <td className="text-center">{formatWholePrice(item.entryPrice)}</td>
+            <td className="text-center">{"TBA"}</td>
             <td className="text-center">
               <Button
                 variant={"ghost"}
                 size={"sm"}
-                onClick={() => closeTrade(item.hash)}
+                onClick={() => removePosition(item.positionId)}
               >
                 close
                 <XIcon className="ms-2 h-4 w-4 text-destructive" />

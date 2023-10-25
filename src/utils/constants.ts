@@ -8,4 +8,6 @@ const defaultPair: Pair = {
 const contractAddress: `0x${string}` =
   "0xf7FF85EB675096Da320eF4a6ad06393c91b07CD1";
 
-export { defaultPair, contractAddress };
+const currentPrice = 1.12;
+
+export { defaultPair, contractAddress, currentPrice };
