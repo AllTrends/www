@@ -1,14 +1,19 @@
 import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
-import { defaultPair } from "~/utils/constants";
+import { contractAddress, defaultPair } from "~/utils/constants";
 import useTradesStore from "~/stores/tradesStore";
 import { type ExecutedTrade } from "~/types";
-import { useContractWrite, type useBalance, useAccount } from "wagmi";
+import {
+  useContractWrite,
+  type useBalance,
+  useAccount,
+  useContractRead,
+} from "wagmi";
 import { Separator } from "~/components/ui/separator";
 import React from "react";
 import { Usdt, Xdc } from "~/components/icons";
-import { getMockPosition } from "~/utils/helpers";
+import { formatWholePrice, getMockPosition } from "~/utils/helpers";
 
 const BuyPanel = ({
   balance,
@@ -53,7 +58,10 @@ const BuyPanel = ({
     const regEx = /^[0-9]+(\.[0-9]{0,2})?$/;
     if (value === "" || regEx.test(value)) {
       // check if the amount is more than the balance
-      if (balance && parseFloat(value) > parseFloat(balance.formatted)) {
+      if (
+        value === "" ||
+        (balance && parseFloat(value) > parseFloat(balance.formatted))
+      ) {
         // if it is disable the buy btn
         setDisabled(true);
       } else {
@@ -61,6 +69,10 @@ const BuyPanel = ({
         setDisabled(false);
       }
       setCollateral(value);
+      if (!value) {
+        setAmount("");
+        return;
+      }
       // calculate the amount
       setAmount(getMockPosition(value));
     }
@@ -121,9 +133,9 @@ const BuyPanel = ({
           />
         </div>
       </div>
-      <BuyDialog>
+      <BuyDialog collateral={collateral} amount={amount}>
         <Button
-          disabled={disabled}
+          disabled={disabled || !collateral || !amount}
           className="w-full bg-green-300 hover:bg-green-200"
           type="button"
         >
@@ -162,7 +174,9 @@ import { testABI } from "~/hooks/wagmi/config";
 
 const BuyDialog: React.FC<{
   children: React.ReactNode;
-}> = ({ children }) => {
+  collateral: string;
+  amount: string;
+}> = ({ children, collateral, amount }) => {
   const {
     address,
     isConnecting: accountLoading,
@@ -170,30 +184,48 @@ const BuyDialog: React.FC<{
   } = useAccount();
 
   const { data, isLoading, isSuccess, write } = useContractWrite({
-    address: "0xf5A822562999C7951Ac13DdD1f2B0AfA8004dE9F",
+    address: contractAddress,
     abi: testABI,
     functionName: "openPosition",
   });
 
-  // const miao =   write({
-  //   args: [10 , 35000 , 0],
-  //   from: address,
-  // })
+  const {
+    data: openPositions,
+    isError: openPositionsError,
+    isLoading: openPositionsLoading,
+  } = useContractRead({
+    address: contractAddress,
+    abi: testABI,
+    functionName: "positions",
+    args: [0],
+  });
+
+  console.log({ data: openPositions, isError: openPositionsError });
 
   return (
     <Dialog>
       <DialogTrigger asChild>{children}</DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>Confirm Buy / Long</DialogTitle>
         </DialogHeader>
         <Separator className="bg-stone-200/40" />
-        <div className="flex min-h-[40vh] grow flex-col items-start justify-start space-x-2 text-stone-100 ring">
+        <div className="flex min-h-[60vh] grow flex-col items-start justify-start gap-4  text-stone-100">
           <div className="flex w-full flex-col items-center justify-center gap-2 px-8">
-            <h3 className="text-2xl">From this</h3>
+            <h3 className="text-2xl">Pay {collateral} USDT</h3>
             <ArrowDown size={24} />
-            <h3 className="text-2xl">To that</h3>
+            <h3 className="text-2xl">
+              To buy {formatWholePrice(parseFloat(amount))} XDC
+            </h3>
           </div>
+          <Separator className="mt-1 bg-stone-200/40" />
+
+          <ul className="mx-4 text-stone-400">
+            <li>lol</li>
+            <li>lol</li>
+            <li>lol</li>
+            <li>lol</li>
+          </ul>
         </div>
         <DialogFooter>
           <Button
