@@ -177,6 +177,11 @@ const BuyDialog: React.FC<{
   collateral: string;
   amount: string;
 }> = ({ children, collateral, amount }) => {
+  const [open, setOpen] = React.useState(false);
+
+  const openDialog = () => setOpen(true);
+  const closeDialog = () => setOpen(false);
+
   const {
     address,
     isConnecting: accountLoading,
@@ -203,7 +208,7 @@ const BuyDialog: React.FC<{
   console.log({ data: openPositions, isError: openPositionsError });
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
