@@ -1,20 +1,18 @@
-import { ChevronDown } from "lucide-react";
-import React, { useState } from "react";
+import React from "react";
 import type { Pair } from "~/types";
 
 interface PairHeaderProps {
   pair: Pair;
 }
 
-const PairHeader = (props: PairHeaderProps) => {
-  return null;
-  const [showPairs, setShowPairs] = useState(false);
 
-  const price = getPrice(props.pair.numerator, props.pair.denominator);
-  const change = getChange(props.pair.numerator, props.pair.denominator);
-  const high = getHigh(props.pair.numerator, props.pair.denominator);
-  const low = getLow(props.pair.numerator, props.pair.denominator);
-  let classHidden = "";
+
+const PairHeader = (props:PairHeaderProps) => {
+
+    const price = getPrice(props.pair.numerator, props.pair.denominator);
+    const change = getChange(props.pair.numerator, props.pair.denominator);
+    const high = getHigh(props.pair.numerator, props.pair.denominator);
+    const low = getLow(props.pair.numerator, props.pair.denominator);
 
   function getPrice(numerator: string, denominator: string) {
     console.log(`Get price for ${numerator}Perp/${denominator} pair.`);
@@ -53,33 +51,13 @@ const PairHeader = (props: PairHeaderProps) => {
     }).format(_low);
   }
 
-  function togglePairs() {
-    setShowPairs((prevShowPairs) => !prevShowPairs);
-    console.log(showPairs);
-    classHidden = showPairs ? "" : "hidden";
-    console.log(classHidden);
-  }
-
-  return (
-    <div className="container mx-auto flex w-full items-center justify-start gap-12 p-5 text-white">
-      <div className="relative">
-        <button
-          className="flex font-bold shadow hover:shadow-xl"
-          onClick={togglePairs}
-        >
-          <div className="h-full text-xl">
-            {props.pair.numerator}Perp/{props.pair.denominator}
-          </div>
-          <ChevronDown className="ml-2" aria-hidden="true" />
-        </button>
-        <div
-          className={`absolute mt-3 flex min-w-[160px] flex-col rounded-md bg-black bg-opacity-90 pb-20 pl-2 pt-2 text-lg ${
-            showPairs ? "" : "hidden"
-          }`}
-        >
-          Other pairs soon to come...
-        </div>
-      </div>
+    return (
+        <div className="container mx-auto p-5 w-full flex items-center justify-start gap-12 text-white">
+            <div className="relative">
+                <button className="font-bold shadow hover:shadow-xl flex">
+                    <div className="h-full text-xl">{props.pair.numerator}Perp/{props.pair.denominator}</div> 
+                </button>
+            </div>
 
       <div>
         <div className="font-semibold">Price</div>
