@@ -2,7 +2,7 @@ import type { Pair } from "~/types";
 
 const defaultPair: Pair = {
   numerator: "XDC",
-  denominator: "USDC",
+  denominator: "USDT",
 };
 
 const defaultChartData: {x: Date, y: number[]}[] = [
