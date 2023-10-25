@@ -133,7 +133,7 @@ const Buy = ({
       // pnl is a random number between -1000 and 1000
       pnl: Math.floor(Math.random() * 2000) - 1000,
       side: "long",
-      size: 0,
+      size: parseFloat(amount),
       timestamp: new Date().toISOString(),
     };
 

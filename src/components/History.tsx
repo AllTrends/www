@@ -5,7 +5,7 @@ import { Button } from "./ui/button";
 import { XIcon } from "lucide-react";
 import useTradesStore from "~/stores/tradesStore";
 import type { Pair } from "~/types";
-import { formatPrice } from "~/utils/helpers";
+import { formatWholePrice } from "~/utils/helpers";
 
 const History = () => {
   return (
@@ -70,12 +70,14 @@ const Positions = () => {
                 (item.pnl >= 0 ? "text-green-400" : "text-red-400")
               }
             >
-              {formatPrice(item.pnl)}
+              {formatWholePrice(item.pnl)}
             </td>
-            <td className="text-center">{formatPrice(item.size)}</td>
-            <td className="text-center">{formatPrice(item.collateral)}</td>
-            <td className="text-center">{formatPrice(item.entry)}</td>
-            <td className="text-center">{formatPrice(item.liquidation)}</td>
+            <td className="text-center">{formatWholePrice(item.size)}</td>
+            <td className="text-center">{formatWholePrice(item.collateral)}</td>
+            <td className="text-center">{formatWholePrice(item.entry)}</td>
+            <td className="text-center">
+              {formatWholePrice(item.liquidation)}
+            </td>
             <td className="text-center">
               <Button
                 variant={"ghost"}
