@@ -9,18 +9,17 @@ const useTradesStore = create<{
   trades: [
     {
       pair: {
-        numerator: "BTC",
-        denominator: "USD",
+        numerator: "XDC",
+        denominator: "USDC",
       },
       hash: "0x1234",
       timestamp: "2021-01-01T00:00:00.000Z",
-      position: "long",
-      pnl: 0,
-      size: 1,
-      collateral: 1,
-      entry: 1,
-      markPrice: 1,
-      liquidation: 1,
+      side: "long",
+      pnl: 543.213333,
+      size: 1003,
+      collateral: 10000,
+      entry: 1.1234,
+      liquidation: 0.43,
     },
   ],
   addTrade: (trade) => {

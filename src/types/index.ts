@@ -7,11 +7,10 @@ export interface ExecutedTrade {
   pair: Pair;
   hash: string;
   timestamp: string;
-  position: "long" | "short";
+  side: "long" | "short";
   pnl: number;
   size: number;
   collateral: number;
   entry: number;
-  markPrice: number;
   liquidation: number;
 }
