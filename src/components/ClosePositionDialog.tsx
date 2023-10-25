@@ -15,10 +15,11 @@ import { XIcon } from "lucide-react";
 import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import { testABI } from "~/hooks/wagmi/config";
 import { contractAddress } from "~/utils/constants";
+import toast from "react-hot-toast";
 
 const ClosePositionDialog = ({ positionId }: { positionId: `0x${string}` }) => {
+  const [open, setOpen] = React.useState(false);
   // ------------------ contract close logic ------------------
-
   const { config } = usePrepareContractWrite({
     address: contractAddress,
     abi: testABI,
@@ -28,9 +29,24 @@ const ClosePositionDialog = ({ positionId }: { positionId: `0x${string}` }) => {
   });
   const { writeAsync, isLoading: isPreparing } = useContractWrite(config);
 
+  const closePosition = async () => {
+    if (!writeAsync) return;
+    // setIsLoading(true);
+    try {
+      await writeAsync();
+      setOpen(false);
+    } catch (e) {
+      // setIsLoading(false);
+      toast.error("Something went wrong");
+    }
+  };
+
   // ------------------  ------------------
   return (
-    <AlertDialog>
+    <AlertDialog
+      open={open}
+      onOpenChange={(o) => (isPreparing ? null : setOpen(o))}
+    >
       <AlertDialogTrigger>
         <Button disabled={isPreparing} variant={"ghost"} size={"sm"}>
           close
@@ -49,14 +65,13 @@ const ClosePositionDialog = ({ positionId }: { positionId: `0x${string}` }) => {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction
+          <Button
+            className="hover:bg-destructive-hover bg-destructive"
             disabled={isPreparing}
-            onClick={async () => {
-              await writeAsync?.();
-            }}
+            onClick={closePosition}
           >
             Close position
-          </AlertDialogAction>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
