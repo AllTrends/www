@@ -5,19 +5,16 @@ interface PairHeaderProps {
   pair: Pair;
 }
 
-
-
-const PairHeader = (props:PairHeaderProps) => {
-
-    const price = getPrice(props.pair.numerator, props.pair.denominator);
-    const change = getChange(props.pair.numerator, props.pair.denominator);
-    const high = getHigh(props.pair.numerator, props.pair.denominator);
-    const low = getLow(props.pair.numerator, props.pair.denominator);
+const PairHeader = (props: PairHeaderProps) => {
+  const price = getPrice(props.pair.numerator, props.pair.denominator);
+  const change = getChange(props.pair.numerator, props.pair.denominator);
+  const high = getHigh(props.pair.numerator, props.pair.denominator);
+  const low = getLow(props.pair.numerator, props.pair.denominator);
 
   function getPrice(numerator: string, denominator: string) {
     console.log(`Get price for ${numerator}Perp/${denominator} pair.`);
     const _price = 1000; // Call API
-    return new Intl.NumberFormat("us-US", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(_price);
@@ -36,7 +33,7 @@ const PairHeader = (props:PairHeaderProps) => {
   function getHigh(numerator: string, denominator: string) {
     console.log(`Get 24h High for ${numerator}Perp/${denominator} pair.`);
     const _high = 1200; // Call API
-    return new Intl.NumberFormat("us-US", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(_high);
@@ -45,19 +42,21 @@ const PairHeader = (props:PairHeaderProps) => {
   function getLow(numerator: string, denominator: string) {
     console.log(`Get 24h Low for ${numerator}Perp/${denominator} pair.`);
     const _low = 800; // Call API
-    return new Intl.NumberFormat("us-US", {
+    return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
     }).format(_low);
   }
 
-    return (
-        <div className="container mx-auto p-5 w-full flex items-center justify-start gap-12 text-white">
-            <div className="relative">
-                <button className="font-bold shadow hover:shadow-xl flex">
-                    <div className="h-full text-xl">{props.pair.numerator}Perp/{props.pair.denominator}</div> 
-                </button>
-            </div>
+  return (
+    <div className="container mx-auto flex w-full items-center justify-start gap-12 p-5 text-white">
+      <div className="relative">
+        <button className="flex font-bold shadow hover:shadow-xl">
+          <div className="h-full text-xl">
+            {props.pair.numerator}Perp/{props.pair.denominator}
+          </div>
+        </button>
+      </div>
 
       <div>
         <div className="font-semibold">Price</div>
