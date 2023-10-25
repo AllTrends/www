@@ -101,5 +101,4 @@ import { defaultPair } from "~/utils/constants";
 import { useAccount, useBalance } from "wagmi";
 import { Loader2 } from "lucide-react";
 import React from "react";
-import { Usdt, Xdc } from "~/components/icons";
 import { BuyPanel, SellPanel } from "~/components";
