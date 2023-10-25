@@ -11,7 +11,7 @@ export default function Home() {
         <div className="min-h-[10vh] w-full rounded-md bg-stone-900  ring-1 ring-stone-500">
           <PairHeader pair={defaultPair} />
         </div>
-        <div className="min-h-[45vh] w-full rounded-md bg-stone-900 p-8 ring-1 ring-stone-500">
+        <div className="min-h-[45vh] w-full rounded-md bg-stone-900 p-5 pl-3 ring-1 ring-stone-500 text-black">
           <FinancialChart />
         </div>
         <div className="min-h-[20vh] w-full rounded-md bg-stone-900 p-3 ring-1 ring-stone-500 ">
