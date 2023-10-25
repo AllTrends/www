@@ -4,7 +4,7 @@ import { Button } from "~/components/ui/button";
 import { defaultPair } from "~/utils/constants";
 import useTradesStore from "~/stores/tradesStore";
 import { type ExecutedTrade } from "~/types";
-import { type useBalance } from "wagmi";
+import { useContractWrite, type useBalance, useAccount } from "wagmi";
 import { Separator } from "~/components/ui/separator";
 import React from "react";
 import { Usdt, Xdc } from "~/components/icons";
@@ -121,13 +121,15 @@ const BuyPanel = ({
           />
         </div>
       </div>
-      <Button
-        disabled={disabled}
-        className="w-full bg-green-300 hover:bg-green-200"
-        type="submit"
-      >
-        Buy / Long
-      </Button>
+      <BuyDialog>
+        <Button
+          disabled={disabled}
+          className="w-full bg-green-300 hover:bg-green-200"
+          type="button"
+        >
+          Buy / Long
+        </Button>
+      </BuyDialog>
       <Separator className="bg-stone-200/40" />
       <div className="w-full grow text-sm text-stone-300">
         <ul className="space-y-2">
@@ -146,3 +148,68 @@ const BuyPanel = ({
 };
 
 export default BuyPanel;
+
+import { ArrowDown, Copy } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { testABI } from "~/hooks/wagmi/config";
+
+const BuyDialog: React.FC<{
+  children: React.ReactNode;
+}> = ({ children }) => {
+  const {
+    address,
+    isConnecting: accountLoading,
+    isDisconnected: accountDisconnected,
+  } = useAccount();
+
+  const { data, isLoading, isSuccess, write } = useContractWrite({
+    address: "0xf5A822562999C7951Ac13DdD1f2B0AfA8004dE9F",
+    abi: testABI,
+    functionName: "openPosition",
+  });
+
+  // const miao =   write({
+  //   args: [10 , 35000 , 0],
+  //   from: address,
+  // })
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>Confirm Buy / Long</DialogTitle>
+        </DialogHeader>
+        <Separator className="bg-stone-200/40" />
+        <div className="flex min-h-[40vh] grow flex-col items-start justify-start space-x-2 text-stone-100 ring">
+          <div className="flex w-full flex-col items-center justify-center gap-2 px-8">
+            <h3 className="text-2xl">From this</h3>
+            <ArrowDown size={24} />
+            <h3 className="text-2xl">To that</h3>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button
+            onClick={() => {
+              write({
+                args: [10, 35000, 0],
+                from: address,
+              });
+            }}
+            variant={"secondary"}
+            className="w-full"
+          >
+            Send it!
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
