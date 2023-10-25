@@ -19,7 +19,7 @@ export type Position = {
   pair: Pair;
   // from chain
   entryPrice: number;
-  positionId: number;
+  positionId: `0x${string}`;
   side: 0 | 1; // 0 = long, 1 = short
   size: number;
   trader: `0x${string}`;
@@ -36,6 +36,6 @@ export interface FinancialData {
 }
 
 export interface D {
-  x: Date
-  y: number[]
+  x: Date;
+  y: number[];
 }

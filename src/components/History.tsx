@@ -1,14 +1,14 @@
 import React from "react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "./ui/tabs";
-import { Button } from "./ui/button";
-import { XIcon } from "lucide-react";
+
 import type { Pair, Position } from "~/types";
 import { formatWholePrice } from "~/utils/helpers";
 import { useContractEvent } from "wagmi";
 import { contractAddress, currentPrice, defaultPair } from "~/utils/constants";
 import { testABI } from "~/hooks/wagmi/config";
 import usePositionsStore from "~/stores/positionsStore";
+import ClosePositionDialog from "./ClosePositionDialog";
 
 const History = () => {
   return (
@@ -71,6 +71,26 @@ const Positions = () => {
     },
   });
 
+  // watch for position closed events
+  useContractEvent({
+    address: contractAddress,
+    abi: testABI,
+    eventName: "PositionClosed",
+
+    listener(res: unknown) {
+      // add trade to store
+      // @ts-expect-error TODO: fix this
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+      const position = res[0].args as Position & { profit: number };
+
+      // pair and pnl are not included in the event
+      removePosition(position.positionId);
+
+      console.log({ position });
+    },
+  });
+
+  // PNL
   const getPnl = (position: Position) => {
     const { entryPrice, side } = position;
     const pnl =
@@ -118,14 +138,7 @@ const Positions = () => {
             <td className="text-center">{formatWholePrice(item.entryPrice)}</td>
             <td className="text-center">{"TBA"}</td>
             <td className="text-center">
-              <Button
-                variant={"ghost"}
-                size={"sm"}
-                onClick={() => removePosition(item.positionId)}
-              >
-                close
-                <XIcon className="ms-2 h-4 w-4 text-destructive" />
-              </Button>
+              <ClosePositionDialog positionId={item.positionId} />
             </td>
           </tr>
         ))}
