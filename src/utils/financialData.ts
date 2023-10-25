@@ -53,4 +53,9 @@ export class SampleFinancialData {
     }
 }
 
-//this.data = SampleFinancialData.create();
+export class ReduceFinancialData {
+    public static aggregateData(detailed: FinancialData, level: number) {
+        console.log(detailed);
+        //const array = Enumerable.From(detailed).GroupBy
+    }
+}
