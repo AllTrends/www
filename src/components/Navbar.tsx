@@ -32,7 +32,7 @@ const Navbar = () => {
           <Button variant={"link"}>Earn</Button>
         </nav>
         <div className="rounded-md ring-1 ring-stone-500 hover:ring-0">
-          <ConnectButton chainStatus={"icon"} />
+          <ConnectButton showBalance={false} chainStatus={"icon"} />
         </div>
       </div>
     </header>
