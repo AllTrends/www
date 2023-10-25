@@ -1,5 +1,4 @@
-import { ChevronDown } from "lucide-react";
-import React, { useState } from "react";
+import React from "react";
 import type { Pair } from "~/types";
 
 
@@ -8,13 +7,11 @@ interface PairHeaderProps {
 }
 
 const PairHeader = (props:PairHeaderProps) => {
-    const [showPairs, setShowPairs] = useState(false);
 
     const price = getPrice(props.pair.numerator, props.pair.denominator);
     const change = getChange(props.pair.numerator, props.pair.denominator);
     const high = getHigh(props.pair.numerator, props.pair.denominator);
     const low = getLow(props.pair.numerator, props.pair.denominator);
-    let classHidden = "";
 
     function getPrice(numerator: string, denominator: string) {
         console.log(`Get price for ${numerator}Perp/${denominator} pair.`);
@@ -44,24 +41,13 @@ const PairHeader = (props:PairHeaderProps) => {
         return new Intl.NumberFormat('us-US', { style: 'currency', currency: 'USD'}).format(_low);
     }
 
-    function togglePairs() {
-        setShowPairs(prevShowPairs => !prevShowPairs);
-        console.log(showPairs);
-        classHidden = showPairs? "" : "hidden";
-        console.log(classHidden);
-    }
 
     return (
         <div className="container mx-auto p-5 w-full flex items-center justify-start gap-12 text-white">
             <div className="relative">
-                <button className="font-bold shadow hover:shadow-xl flex"
-                        onClick={togglePairs}>
+                <button className="font-bold shadow hover:shadow-xl flex">
                     <div className="h-full text-xl">{props.pair.numerator}Perp/{props.pair.denominator}</div> 
-                    <ChevronDown className="ml-2" aria-hidden="true"/>
                 </button>
-                <div className={`absolute mt-3 pb-20 pt-2 pl-2 flex flex-col bg-black bg-opacity-90 min-w-[160px] rounded-md text-lg ${showPairs ? "" : "hidden"}`}>
-                    Other pairs soon to come...
-                </div>
             </div>
 
             <div>
