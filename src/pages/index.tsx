@@ -1,4 +1,5 @@
 import PairHeader from "~/components/PairHeader";
+import FinancialChart from '~/components/FinancialChart'
 
 export default function Home() {
   // const hello = api.post.hello.useQuery({ text: "from tRPC" });
@@ -10,10 +11,8 @@ export default function Home() {
         <div className="min-h-[10vh] w-full rounded-md bg-stone-900  ring-1 ring-stone-500">
           <PairHeader pair={defaultPair} />
         </div>
-        <div className="min-h-[45vh] w-full rounded-md bg-stone-900 p-8 ring-1 ring-stone-500">
-          The chart goes here
-          <Usdt />
-          <Xdc />
+        <div className="min-h-[45vh] w-full rounded-md bg-stone-900 p-5 pl-3 ring-1 ring-stone-500 text-black">
+          <FinancialChart />
         </div>
         <div className="min-h-[20vh] w-full rounded-md bg-stone-900 p-3 ring-1 ring-stone-500 ">
           <History />
@@ -102,5 +101,4 @@ import { defaultPair } from "~/utils/constants";
 import { useAccount, useBalance } from "wagmi";
 import { Loader2 } from "lucide-react";
 import React from "react";
-import { Usdt, Xdc } from "~/components/icons";
 import { BuyPanel, SellPanel } from "~/components";

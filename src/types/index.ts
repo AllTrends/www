@@ -24,3 +24,18 @@ export type Position = {
   size: number;
   trader: `0x${string}`;
 };
+
+export interface FinancialData {
+  time: number;
+  label: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+  volume: number;
+}
+
+export interface D {
+  x: Date
+  y: number[]
+}
