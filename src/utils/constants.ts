@@ -5,6 +5,13 @@ const defaultPair: Pair = {
   denominator: "USDT",
 };
 
+const contractAddress: `0x${string}` =
+  "0xf7FF85EB675096Da320eF4a6ad06393c91b07CD1";
+
+const currentPrice = 1.12;
+
+
+
 const defaultChartData: {x: Date, y: number[]}[] = [
   {
       x: new Date(1538778600000),
@@ -248,4 +255,5 @@ const defaultChartData: {x: Date, y: number[]}[] = [
   },
 ]
 
-export { defaultPair, defaultChartData };
+export { defaultPair,defaultChartData, contractAddress, currentPrice };
+

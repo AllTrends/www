@@ -15,6 +15,16 @@ export interface ExecutedTrade {
   liquidation: number;
 }
 
+export type Position = {
+  pair: Pair;
+  // from chain
+  entryPrice: number;
+  positionId: number;
+  side: 0 | 1; // 0 = long, 1 = short
+  size: number;
+  trader: `0x${string}`;
+};
+
 export interface FinancialData {
   time: number;
   label: string;
