@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import useFinancialDataStore from "~/stores/financialDataStore";
 import type { FinancialData, Pair } from "~/types";
 
@@ -7,21 +7,27 @@ interface PairHeaderProps {
 }
 
 const PairHeader = (props: PairHeaderProps) => {
+  const [loaded, setLoaded] = useState(false)
   const financialDataStore: FinancialData[] = useFinancialDataStore((state) => state.data);
   const _24h = financialDataStore.filter((el) => new Date(el.time) <= new Date(new Date().getTime() - (24*60*60*1000)));
 
-  const price = getPrice(props.pair.numerator, props.pair.denominator);
+  const _price = useFinancialDataStore((state) => state.getLastPrice)();
+
+  const price = formatPrice(_price);
   const change = getChange(props.pair.numerator, props.pair.denominator);
   const high = getHigh(props.pair.numerator, props.pair.denominator);
   const low = getLow(props.pair.numerator, props.pair.denominator);
 
-  function getPrice(numerator: string, denominator: string) {
-    console.log(`Get price for ${numerator}Perp/${denominator} pair.`);
-    const _price = 1000; // Call API
-    return new Intl.NumberFormat("en-US", {
+  useEffect(() => {
+    setLoaded(true);
+  }, [_price]);
+
+  function formatPrice(price: number) {
+    const formattedPrice = new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
-    }).format(_price);
+    }).format(price);
+    return loaded?formattedPrice:"";
   }
 
   function getChange(numerator: string, denominator: string) {
