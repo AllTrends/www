@@ -1,4 +1,24 @@
-import type { FinancialData } from '~/types';
+import type { FinancialData, D } from '~/types';
+
+
+export function financialDataToD(f: FinancialData): D {
+    return {
+      x: new Date(f.time*1000),
+      y: [f.open, f.high, f.low, f.close]
+    };
+};
+  
+export function dToFinancialData(d: D): FinancialData {
+    return {
+      time: Math.floor(d.x.getTime() / 1000),
+      label: String(d.x),
+      open: d.y[0]!,
+      high: d.y[1]!,
+      low: d.y[2]!,
+      close: d.y[3]!,
+      volume: 0,
+    }
+};
 
 export class SampleFinancialData {
 
@@ -11,7 +31,7 @@ export class SampleFinancialData {
         let c = Math.round((l + (Math.random() * (h - l))) * 10000) / 10000;
 
         if (items === undefined) {
-            items = 120;
+            items = 5;
         }
 
         if (rangeMins === undefined) {
@@ -54,8 +74,37 @@ export class SampleFinancialData {
 }
 
 export class ReduceFinancialData {
-    public static aggregateData(detailed: FinancialData, level: number) {
-        console.log(detailed);
-        //const array = Enumerable.From(detailed).GroupBy
+    public static chunkIntoN = (arr: FinancialData[], n: number): FinancialData[][] => {
+        const size = Math.ceil(arr.length / n);
+        return Array.from({ length: n }, (v, i) =>
+          arr.slice(i * size, i * size + size)
+        );
+    }
+
+    public static aggregate(period: FinancialData[]): FinancialData {
+        const d = period.reduce((acc: FinancialData, current: FinancialData) => ({
+            time: acc.time,
+            label: acc.label,
+            open: acc.open,
+            close: current.close,
+            high: current.high>acc.high?current.high:acc.high,
+            low: current.low<acc.low?current.low:acc.low,
+            volume: acc.volume + current.volume
+        }));
+        return d;
+    };
+
+    public static aggregateData(detailed: FinancialData[], precision: number, graphLength?: number) {
+        //const newLength: number = precision; // Because detailled array has values every minute
+        const chunks = this.chunkIntoN(detailed, detailed.length/precision);
+
+        const out = chunks.map((el: FinancialData[]): FinancialData => {
+            return this.aggregate(el);
+        });
+
+        if(graphLength === undefined) graphLength = 120;
+        const output: FinancialData[] = out.slice(out.length - graphLength, out.length);
+
+        return output;
     }
 }
