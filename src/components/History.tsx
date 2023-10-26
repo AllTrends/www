@@ -113,44 +113,51 @@ const Trades = () => {
   const [parent] = useAutoAnimate();
   const positions = usePositionsStore((state) => state.positions);
 
+  return (
+    <tbody ref={parent}>
+      {positions.map((position) => (
+        <Trade key={position.positionId} position={position} />
+      ))}
+    </tbody>
+  );
+};
+
+const Trade = ({ position }: { position: Position }) => {
   const pairObjToString = (pair: Pair) => {
     return `${pair.numerator.toUpperCase()}/${pair.denominator.toUpperCase()}`;
   };
 
   return (
-    <tbody ref={parent}>
-      {positions.map((item) => (
-        <tr
-          key={item.positionId}
-          className="relative rounded-sm ring-1 ring-stone-300/20"
-        >
-          <td className="text-center leading-8">
-            {pairObjToString(item.pair)}
-          </td>
-          <td className="text-center">{item.side === 0 ? "long" : "short"}</td>
-          <td
-            className={
-              "text-center " +
-              (getPnl(item) >= 0 ? "text-green-400" : "text-red-400")
-            }
-          >
-            {formatWholePrice(getPnl(item))}
-          </td>
-          <td className="text-center">{formatWholePrice(item.size)}</td>
-          <td className="text-center">{"TBA"}</td>
-          <td className="text-center">{formatWholePrice(item.entryPrice)}</td>
-          <td className="text-center">{"TBA"}</td>
-          <td className="text-center">
-            {item.closing ? (
-              <Button disabled variant={"ghost"} size={"sm"}>
-                closing...
-              </Button>
-            ) : (
-              <ClosePositionDialog positionId={item.positionId} />
-            )}
-          </td>
-        </tr>
-      ))}
-    </tbody>
+    <tr
+      key={position.positionId}
+      className="relative rounded-sm ring-1 ring-stone-300/20"
+    >
+      <td className="text-center leading-8">
+        {pairObjToString(position.pair)}
+      </td>
+      <td className="text-center">{position.side === 0 ? "long" : "short"}</td>
+      <td
+        className={
+          "text-center " +
+          (getPnl(position) >= 0 ? "text-green-400" : "text-red-400")
+        }
+      >
+        {formatWholePrice(getPnl(position))}
+      </td>
+      <td className="text-center">{formatWholePrice(position.size)}</td>
+      <td className="text-center">{"TBA"}</td>
+      <td className="text-center">{formatWholePrice(position.entryPrice)}</td>
+      <td className="text-center">{"TBA"}</td>
+      <td className="text-center">
+        {position.closing ? (
+          <Button disabled variant={"ghost"} size={"sm"}>
+            closing...
+          </Button>
+        ) : (
+          // closing position is not working yet
+          <ClosePositionDialog positionId={position.positionId} />
+        )}
+      </td>
+    </tr>
   );
 };

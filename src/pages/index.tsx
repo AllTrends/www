@@ -29,6 +29,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 
 const TradingUi = () => {
+  const { chains, isLoading: loadingNetwork } = useSwitchNetwork();
   const {
     address,
     isConnecting: accountLoading,
@@ -45,7 +46,7 @@ const TradingUi = () => {
 
   const isLoading = accountLoading || balanceLoading;
 
-  if (isLoading)
+  if (isLoading || loadingNetwork)
     return (
       <div className="flex h-full flex-col items-center justify-start gap-6 rounded-md bg-stone-900 p-6 ring-1 ring-stone-500 ">
         <h3 className="text-xl">Loading account data</h3>
@@ -65,6 +66,17 @@ const TradingUi = () => {
         </div>
       </div>
     );
+
+  if (chains[0] !== xdcTestnet) {
+    return (
+      <div className="flex h-full flex-col items-center justify-start gap-6 rounded-md bg-stone-900 p-6 ring-1 ring-stone-500 ">
+        <h3 className="text-lg">Wrong network</h3>
+        <div className="rounded-md ring-1 ring-stone-500 hover:ring-0">
+          <ConnectButton showBalance={false} chainStatus={"icon"} />
+        </div>
+      </div>
+    );
+  }
 
   if (balanceError)
     return (
@@ -98,7 +110,8 @@ const TradingUi = () => {
 
 import History from "~/components/History";
 import { defaultPair } from "~/utils/constants";
-import { useAccount, useBalance } from "wagmi";
+import { useAccount, useBalance, useSwitchNetwork } from "wagmi";
 import { Loader2 } from "lucide-react";
 import React from "react";
 import { BuyPanel, SellPanel } from "~/components";
+import { xdcTestnet } from "viem/chains";

@@ -99,9 +99,9 @@ export const ABI = [
       },
       {
         indexed: false,
-        internalType: "uint256",
+        internalType: "int256",
         name: "profit",
-        type: "uint256",
+        type: "int256",
       },
     ],
     name: "PositionClosed",
@@ -156,6 +156,7 @@ export const ABI = [
     ],
     stateMutability: "view",
     type: "function",
+    constant: true,
   },
   {
     inputs: [
@@ -168,6 +169,34 @@ export const ABI = [
     name: "collateralBalances",
     outputs: [
       {
+        internalType: "int256",
+        name: "",
+        type: "int256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+    constant: true,
+  },
+  {
+    inputs: [],
+    name: "collateralToken",
+    outputs: [
+      {
+        internalType: "contract IXRC20",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+    constant: true,
+  },
+  {
+    inputs: [],
+    name: "currentPrice",
+    outputs: [
+      {
         internalType: "uint256",
         name: "",
         type: "uint256",
@@ -175,19 +204,7 @@ export const ABI = [
     ],
     stateMutability: "view",
     type: "function",
-  },
-  {
-    inputs: [],
-    name: "collateralToken",
-    outputs: [
-      {
-        internalType: "contract IERC20",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
+    constant: true,
   },
   {
     inputs: [],
@@ -201,6 +218,7 @@ export const ABI = [
     ],
     stateMutability: "view",
     type: "function",
+    constant: true,
   },
   {
     inputs: [],
@@ -214,19 +232,7 @@ export const ABI = [
     ],
     stateMutability: "view",
     type: "function",
-  },
-  {
-    inputs: [],
-    name: "indexPrice",
-    outputs: [
-      {
-        internalType: "uint256",
-        name: "",
-        type: "uint256",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
+    constant: true,
   },
   {
     inputs: [],
@@ -240,6 +246,7 @@ export const ABI = [
     ],
     stateMutability: "view",
     type: "function",
+    constant: true,
   },
   {
     inputs: [
@@ -271,44 +278,15 @@ export const ABI = [
         name: "side",
         type: "uint8",
       },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "getPositions",
-    outputs: [
       {
-        components: [
-          {
-            internalType: "address",
-            name: "trader",
-            type: "address",
-          },
-          {
-            internalType: "uint256",
-            name: "size",
-            type: "uint256",
-          },
-          {
-            internalType: "uint256",
-            name: "entryPrice",
-            type: "uint256",
-          },
-          {
-            internalType: "enum PerpetualDEX.Side",
-            name: "side",
-            type: "uint8",
-          },
-        ],
-        internalType: "struct PerpetualDEX.Position[]",
-        name: "",
-        type: "tuple[]",
+        internalType: "enum PerpetualDEX.State",
+        name: "state",
+        type: "uint8",
       },
     ],
     stateMutability: "view",
     type: "function",
+    constant: true,
   },
   {
     inputs: [
@@ -354,7 +332,7 @@ export const ABI = [
         type: "uint256",
       },
     ],
-    name: "updateIndexPrice",
+    name: "updatecurrentPrice",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -365,5 +343,63 @@ export const ABI = [
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "to",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "value",
+        type: "uint256",
+      },
+    ],
+    name: "transferTokens",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+    ],
+    name: "getTokenBalance",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+    constant: true,
+  },
+  {
+    inputs: [
+      {
+        internalType: "int256",
+        name: "x",
+        type: "int256",
+      },
+    ],
+    name: "absoluteValue",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "pure",
+    type: "function",
+    constant: true,
   },
 ] as const;
