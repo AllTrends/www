@@ -1,4 +1,5 @@
 import { type AppType } from "next/app";
+import { Toaster } from "react-hot-toast";
 
 import { api } from "~/utils/api";
 
@@ -19,6 +20,7 @@ import { configureChains, createConfig, WagmiConfig } from "wagmi";
 import { publicProvider } from "wagmi/providers/public";
 import { xdcTestnet } from "viem/chains";
 import BaseLayout from "~/layouts/BaseLayout";
+import { walletConnectProjectId } from "~/utils/constants";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
   const { chains, publicClient } = configureChains(
@@ -34,7 +36,7 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   const { connectors } = getDefaultWallets({
     appName: "MIAO",
     chains,
-    projectId: "7171244509c2a41cb8e9e1fbc38a90b3",
+    projectId: walletConnectProjectId,
   });
 
   const wagmiConfig = createConfig({
@@ -46,6 +48,19 @@ const MyApp: AppType = ({ Component, pageProps }) => {
   return (
     <WagmiConfig config={wagmiConfig}>
       <RainbowKitProvider chains={chains} theme={customRainbowTheme}>
+        <Toaster
+          position="bottom-right"
+          toastOptions={{
+            success: {
+              style: {
+                background: "#0D0A09",
+                color: "#FAFAF9",
+                border: "1px solid #FAFAF9",
+              },
+            },
+          }}
+        />
+
         <BaseLayout>
           <Component {...pageProps} />
         </BaseLayout>

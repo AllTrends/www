@@ -1,42 +1,18 @@
 import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
-import { defaultPair } from "~/utils/constants";
-import useTradesStore from "~/stores/tradesStore";
-import { type ExecutedTrade } from "~/types";
 import { type useBalance } from "wagmi";
 import { Separator } from "~/components/ui/separator";
 import React from "react";
 import { Usdt, Xdc } from "~/components/icons";
 import { getMockPosition } from "~/utils/helpers";
+import BuyDialog from "./BuyDialog";
 
 const BuyPanel = ({
   balance,
 }: {
   balance: ReturnType<typeof useBalance>["data"];
 }) => {
-  const addTransaction = useTradesStore((state) => state.addTrade);
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    // create randomized trade
-    const trade: ExecutedTrade = {
-      hash: Math.random().toString(),
-      pair: defaultPair,
-      collateral: parseFloat(collateral),
-      entry: 1.21,
-      liquidation: 0,
-      // pnl is a random number between -1000 and 1000
-      pnl: Math.floor(Math.random() * 2000) - 1000,
-      side: "long",
-      size: parseFloat(amount),
-      timestamp: new Date().toISOString(),
-    };
-
-    addTransaction(trade);
-    console.log("submit");
-  };
-
   const setMaxAmount = () => {
     if (!balance) return;
     setCollateral(balance.formatted);
@@ -50,10 +26,14 @@ const BuyPanel = ({
   const handleCollateralChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     // this need to be formatted as a number with decimals separated by a dot
     const value = e.target.value;
-    const regEx = /^[0-9]+(\.[0-9]{0,2})?$/;
+
+    const regEx = /^[0-9]*$/;
     if (value === "" || regEx.test(value)) {
       // check if the amount is more than the balance
-      if (balance && parseFloat(value) > parseFloat(balance.formatted)) {
+      if (
+        value === "0" ||
+        (balance && parseFloat(value) > parseFloat(balance.formatted))
+      ) {
         // if it is disable the buy btn
         setDisabled(true);
       } else {
@@ -61,16 +41,17 @@ const BuyPanel = ({
         setDisabled(false);
       }
       setCollateral(value);
+      if (!value) {
+        setAmount("");
+        return;
+      }
       // calculate the amount
-      setAmount(getMockPosition(value));
+      setAmount((parseFloat(value) * 1.1).toFixed(2).toString());
     }
   };
 
   return (
-    <form
-      className="relative flex  flex-col items-start justify-start gap-4 p-4"
-      onSubmit={handleSubmit}
-    >
+    <div className="relative flex  flex-col items-start justify-start gap-4 p-4">
       <div className="mb-9 flex w-full grow flex-col items-start justify-start gap-5">
         <div className="grid w-full max-w-sm items-center gap-1.5">
           <Label
@@ -121,13 +102,15 @@ const BuyPanel = ({
           />
         </div>
       </div>
-      <Button
-        disabled={disabled}
-        className="w-full bg-green-300 hover:bg-green-200"
-        type="submit"
-      >
-        Buy / Long
-      </Button>
+      <BuyDialog collateral={collateral} amount={amount}>
+        <Button
+          disabled={disabled || !collateral || !amount}
+          className="w-full bg-green-300 hover:bg-green-200"
+          type="button"
+        >
+          Buy / Long
+        </Button>
+      </BuyDialog>
       <Separator className="bg-stone-200/40" />
       <div className="w-full grow text-sm text-stone-300">
         <ul className="space-y-2">
@@ -141,7 +124,7 @@ const BuyPanel = ({
           </li>
         </ul>
       </div>
-    </form>
+    </div>
   );
 };
 
