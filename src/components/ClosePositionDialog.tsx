@@ -23,14 +23,12 @@ const ClosePositionDialog = ({ positionId }: { positionId: bigint }) => {
     (state) => state.setPositionClosing,
   );
 
-  const removePosition = usePositionsStore((state) => state.removePosition);
-
   const { isLoading, writeAsync } = useContractWrite({
     address: "0xecb504d39723b0be0e3a9aa33d646642d1051ee1",
     abi: ABI,
     functionName: "closePosition",
     // positionId
-    args: [BigInt(positionId)],
+    args: [positionId],
   });
 
   const writeAsyncPromise = async () => {
@@ -50,9 +48,6 @@ const ClosePositionDialog = ({ positionId }: { positionId: bigint }) => {
         error: <b>Could not close the position...</b>,
       });
       setPositionClosing(positionId);
-      // setTimeout(() => {
-      //   removePosition(positionId);
-      // }, 3000);
     } catch (e) {
       console.log("e is ", e);
     } finally {
@@ -85,10 +80,11 @@ const ClosePositionDialog = ({ positionId }: { positionId: bigint }) => {
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <Button
             className="hover:bg-destructive-hover bg-destructive"
-            disabled={isLoading}
+            // disabled={isLoading}
+            disabled
             onClick={closePosition}
           >
-            Close position
+            Close position (coming soon)
           </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
