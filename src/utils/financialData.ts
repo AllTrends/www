@@ -1,5 +1,8 @@
-import type { FinancialData, D } from '~/types';
+/*
+This file contains helper functions to be able to generate mock-up data and aggregate it to candles of different sizes.
+*/
 
+import type { FinancialData, D } from '~/types';
 
 export function financialDataToD(f: FinancialData): D {
     return {
@@ -20,6 +23,9 @@ export function dToFinancialData(d: D): FinancialData {
     }
 };
 
+/*
+This class generates a random array of financial data aggregated to the minute level.
+*/
 export class SampleFinancialData {
 
     public static create(items?: number, rangeMins?: number): FinancialData[] {
@@ -73,6 +79,9 @@ export class SampleFinancialData {
     }
 }
 
+/*
+This class aggregates 1-min-OHLC data to the needed level of details.
+*/
 export class ReduceFinancialData {
     public static chunkIntoN = (arr: FinancialData[], n: number): FinancialData[][] => {
         const size = Math.ceil(arr.length / n);
