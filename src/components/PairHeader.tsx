@@ -23,11 +23,8 @@ const PairHeader = (props: PairHeaderProps) => {
   }, [_price]);
 
   function formatPrice(price: number) {
-    const formattedPrice = new Intl.NumberFormat("en-US", {
-      style: "currency",
-      currency: "USD",
-    }).format(price);
-    return loaded?formattedPrice:"";
+    const goodPrice = price.toString();
+    return loaded?goodPrice:"";
   }
 
   function getChange(numerator: string, denominator: string) {
@@ -70,7 +67,7 @@ const PairHeader = (props: PairHeaderProps) => {
 
       <div>
         <div className="font-semibold">Price</div>
-        <div>{price}</div>
+        <div>${price}</div>
       </div>
       <div>
         <div className="font-semibold">24h Change</div>

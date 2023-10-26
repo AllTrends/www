@@ -1,3 +1,8 @@
+/*
+This file contains some constants that would need to be reaplced with real values 
+once we can receive them from the Blockchain.
+*/
+
 import type { Pair } from "~/types";
 
 const defaultPair: Pair = {
@@ -15,10 +20,13 @@ const currentPrice = 1.12;
 
 const allowedSlippage = 0.003;
 
+const currentXDCPrice = 0.5;
+
 export {
   defaultPair,
   contractAddress,
   currentPrice,
   walletConnectProjectId,
   allowedSlippage,
+  currentXDCPrice,
 };
