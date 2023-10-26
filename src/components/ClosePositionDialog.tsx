@@ -1,7 +1,6 @@
 import React from "react";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -12,43 +11,62 @@ import {
 } from "./ui/alert-dialog";
 import { Button } from "./ui/button";
 import { XIcon } from "lucide-react";
-import { useContractWrite, usePrepareContractWrite } from "wagmi";
-import { testABI } from "~/hooks/wagmi/config";
-import { contractAddress } from "~/utils/constants";
+import { useContractWrite } from "wagmi";
 import toast from "react-hot-toast";
+import { ABI } from "~/utils/helpers";
+import usePositionsStore from "~/stores/positionsStore";
 
-const ClosePositionDialog = ({ positionId }: { positionId: `0x${string}` }) => {
+const ClosePositionDialog = ({ positionId }: { positionId: bigint }) => {
   const [open, setOpen] = React.useState(false);
-  // ------------------ contract close logic ------------------
-  const { config } = usePrepareContractWrite({
-    address: contractAddress,
-    abi: testABI,
+
+  const setPositionClosing = usePositionsStore(
+    (state) => state.setPositionClosing,
+  );
+
+  const removePosition = usePositionsStore((state) => state.removePosition);
+
+  const { isLoading, writeAsync } = useContractWrite({
+    address: "0xecb504d39723b0be0e3a9aa33d646642d1051ee1",
+    abi: ABI,
     functionName: "closePosition",
     // positionId
-    args: [positionId],
+    args: [BigInt(positionId)],
   });
-  const { writeAsync, isLoading: isPreparing } = useContractWrite(config);
 
-  const closePosition = async () => {
-    if (!writeAsync) return;
-    // setIsLoading(true);
+  const writeAsyncPromise = async () => {
     try {
       await writeAsync();
-      setOpen(false);
-    } catch (e) {
-      // setIsLoading(false);
-      toast.error("Something went wrong");
+    } catch (_e) {
+      throw new Error();
     }
   };
 
-  // ------------------  ------------------
+  const closePosition = async () => {
+    if (isLoading) return;
+    try {
+      await toast.promise(writeAsyncPromise(), {
+        loading: "closing position...",
+        success: <b>position is being closed! awaiting confirmation...</b>,
+        error: <b>Could not close the position...</b>,
+      });
+      setPositionClosing(positionId);
+      // setTimeout(() => {
+      //   removePosition(positionId);
+      // }, 3000);
+    } catch (e) {
+      console.log("e is ", e);
+    } finally {
+      setOpen(false);
+    }
+  };
+
   return (
     <AlertDialog
       open={open}
-      onOpenChange={(o) => (isPreparing ? null : setOpen(o))}
+      onOpenChange={(o) => (isLoading ? null : setOpen(o))}
     >
-      <AlertDialogTrigger>
-        <Button disabled={isPreparing} variant={"ghost"} size={"sm"}>
+      <AlertDialogTrigger asChild>
+        <Button disabled={isLoading} variant={"ghost"} size={"sm"}>
           close
           <XIcon className="ms-2 h-4 w-4 text-destructive" />
         </Button>
@@ -67,7 +85,7 @@ const ClosePositionDialog = ({ positionId }: { positionId: `0x${string}` }) => {
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <Button
             className="hover:bg-destructive-hover bg-destructive"
-            disabled={isPreparing}
+            disabled={isLoading}
             onClick={closePosition}
           >
             Close position

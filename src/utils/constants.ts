@@ -6,7 +6,8 @@ const defaultPair: Pair = {
 };
 
 const contractAddress: `0x${string}` =
-  "0xf7FF85EB675096Da320eF4a6ad06393c91b07CD1";
+  // "0xf7FF85EB675096Da320eF4a6ad06393c91b07CD1";
+  "0x17688Bf34f8bce6F6b698da4AE68D92aAB332b05";
 
 const walletConnectProjectId = "f2a8b0c8053e31d62e16f27ad108ea3c";
 
