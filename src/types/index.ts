@@ -17,11 +17,13 @@ export interface ExecutedTrade {
 
 export type Position = {
   pair: Pair;
+  closing: boolean;
+  pnl: number;
   // from chain
-  entryPrice: number;
-  positionId: `0x${string}`;
-  side: 0 | 1; // 0 = long, 1 = short
-  size: number;
+  entryPrice: bigint;
+  positionId: bigint;
+  side: number;
+  size: bigint;
   trader: `0x${string}`;
 };
 

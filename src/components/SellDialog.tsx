@@ -7,16 +7,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import { testABI } from "~/hooks/wagmi/config";
-import {
-  useContractEvent,
-  useContractWrite,
-  usePrepareContractWrite,
-} from "wagmi";
+import { useContractEvent, useContractWrite } from "wagmi";
 import toast from "react-hot-toast";
 import React from "react";
 import { Separator } from "./ui/separator";
-import { formatWholePrice } from "~/utils/helpers";
+import { ABI, formatWholePrice } from "~/utils/helpers";
 import { Button } from "./ui/button";
 import { contractAddress, currentPrice } from "~/utils/constants";
 
@@ -63,7 +58,7 @@ const SellDialogContent = ({
 }) => {
   useContractEvent({
     address: contractAddress,
-    abi: testABI,
+    abi: ABI,
     eventName: "PositionOpened",
     listener(_position) {
       setIsLoading(false);
@@ -72,23 +67,36 @@ const SellDialogContent = ({
     },
   });
 
-  const { config } = usePrepareContractWrite({
+  const { writeAsync, isLoading: isPreparing } = useContractWrite({
     address: contractAddress,
-    abi: testABI,
+    abi: ABI,
     functionName: "openPosition",
     // size, entryPrice, side (0 = long, 1 = short)
-    args: [collateral, currentPrice.toFixed(0), 1],
+    args: [BigInt(collateral), BigInt(currentPrice.toFixed(0)), 1],
   });
-  const { writeAsync, isLoading: isPreparing } = useContractWrite(config);
 
-  const submit = async () => {
-    if (!writeAsync) return;
-    setIsLoading(true);
+  const writeAsyncPromise = async () => {
     try {
       await writeAsync();
+    } catch (_e) {
+      throw new Error();
+    }
+  };
+
+  const submit = async () => {
+    setIsLoading(true);
+    try {
+      await toast.promise(writeAsyncPromise(), {
+        loading: "placing order...",
+        success: <b>order placed! awaiting confirmation...</b>,
+        error: <b>Could not place order...</b>,
+      });
+      setIsLoading(true);
     } catch (e) {
+      console.log("e is ", e);
+    } finally {
       setIsLoading(false);
-      toast.error("Something went wrong");
+      closeModal();
     }
   };
 

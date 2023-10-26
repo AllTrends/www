@@ -7,16 +7,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import { testABI } from "~/hooks/wagmi/config";
-import {
-  useContractEvent,
-  useContractWrite,
-  usePrepareContractWrite,
-} from "wagmi";
+import { useContractWrite } from "wagmi";
 import toast from "react-hot-toast";
 import React from "react";
 import { Separator } from "./ui/separator";
-import { formatWholePrice } from "~/utils/helpers";
+import { ABI, formatWholePrice } from "~/utils/helpers";
 import { Button } from "./ui/button";
 import { contractAddress, currentPrice } from "~/utils/constants";
 
@@ -34,7 +29,9 @@ const BuyDialog: React.FC<{
 
   return (
     <Dialog open={open} onOpenChange={(o) => (isLoading ? null : setOpen(o))}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger asChild className="w-full">
+        {children}
+      </DialogTrigger>
       {collateral && amount && open && (
         <BuyDialogContent
           collateral={collateral}
@@ -61,34 +58,43 @@ const BuyDialogContent = ({
   setIsLoading: (b: boolean) => void;
   isLoading: boolean;
 }) => {
-  useContractEvent({
+  // const { config } = usePrepareContractWrite({
+  //   address: contractAddress,
+  //   abi: ABI,
+  //   functionName: "openPosition",
+  //   // size, entryPrice, side (0 = long, 1 = short)
+  //   args: [BigInt(collateral), BigInt(currentPrice.toFixed(0)), 0],
+  // });
+  const { writeAsync, isLoading: isPreparing } = useContractWrite({
     address: contractAddress,
-    abi: testABI,
-    eventName: "PositionOpened",
-    listener(_position) {
-      setIsLoading(false);
-      toast.success("Your order has been placed!");
-      closeModal();
-    },
-  });
-
-  const { config } = usePrepareContractWrite({
-    address: contractAddress,
-    abi: testABI,
+    abi: ABI,
     functionName: "openPosition",
     // size, entryPrice, side (0 = long, 1 = short)
-    args: [collateral, currentPrice.toFixed(0), 0],
+    args: [BigInt(collateral), BigInt(currentPrice.toFixed(0)), 0],
   });
-  const { writeAsync, isLoading: isPreparing } = useContractWrite(config);
 
-  const submit = async () => {
-    if (!writeAsync) return;
-    setIsLoading(true);
+  const writeAsyncPromise = async () => {
     try {
       await writeAsync();
+    } catch (_e) {
+      throw new Error();
+    }
+  };
+
+  const submit = async () => {
+    setIsLoading(true);
+    try {
+      await toast.promise(writeAsyncPromise(), {
+        loading: "placing order...",
+        success: <b>order placed! awaiting confirmation...</b>,
+        error: <b>Could not place order...</b>,
+      });
+      setIsLoading(true);
     } catch (e) {
+      console.log("e is ", e);
+    } finally {
       setIsLoading(false);
-      toast.error("Something went wrong");
+      closeModal();
     }
   };
 
