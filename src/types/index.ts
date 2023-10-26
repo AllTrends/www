@@ -1,7 +1,7 @@
 export interface Pair {
   numerator: string;
   denominator: string;
-}
+};
 
 export interface ExecutedTrade {
   pair: Pair;
@@ -13,7 +13,7 @@ export interface ExecutedTrade {
   collateral: number;
   entry: number;
   liquidation: number;
-}
+};
 
 export type Position = {
   pair: Pair;
@@ -33,7 +33,7 @@ export interface FinancialData {
   low: number;
   close: number;
   volume: number;
-}
+};
 
 export interface D {
   x: Date;

@@ -1,11 +1,15 @@
 import React from "react";
-import type { Pair } from "~/types";
+import useFinancialDataStore from "~/stores/financialDataStore";
+import type { FinancialData, Pair } from "~/types";
 
 interface PairHeaderProps {
   pair: Pair;
 }
 
 const PairHeader = (props: PairHeaderProps) => {
+  const financialDataStore: FinancialData[] = useFinancialDataStore((state) => state.data);
+  const _24h = financialDataStore.filter((el) => new Date(el.time) <= new Date(new Date().getTime() - (24*60*60*1000)));
+
   const price = getPrice(props.pair.numerator, props.pair.denominator);
   const change = getChange(props.pair.numerator, props.pair.denominator);
   const high = getHigh(props.pair.numerator, props.pair.denominator);

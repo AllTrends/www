@@ -3,23 +3,24 @@ import dynamic from 'next/dynamic';
 const ReactApexChart = dynamic(() => import('react-apexcharts'), {
   ssr: false,
 });
-import { SampleFinancialData } from "~/utils/financialData";
+//import { SampleFinancialData } from "~/utils/financialData";
 import { Button } from "./ui/button";
-import useChartDataStore from "~/stores/chartDataStore";
+import useFinancialDataStore from "~/stores/financialDataStore";
+import type { FinancialData } from "~/types";
+import { ReduceFinancialData, financialDataToD } from "~/utils/financialData";
 
 
 const FinancialChart = () => {
 
-    const chartDataStore = useChartDataStore((state) => state.data);
+    const financialDataStore = useFinancialDataStore((state) => state.data);
 
-    const [timeRange, setTimeRange] = useState(30);
-    const [chartData, setChartData] = useState(chartDataStore);
+    const [chartData, setChartData] = useState(ReduceFinancialData.aggregateData(financialDataStore, 15));
     const [chartHeight, setChartHeight] = useState(450);
 
     const state = {
         options: {
             series: [{
-                data: chartData,
+                data: chartData.map(el => financialDataToD(el)),
                 }],
             chart: {
                 type: 'candlestick' as const,
@@ -51,14 +52,15 @@ const FinancialChart = () => {
         }
     };
 
-    const changeTimeRange = (mins: number) => {
-        setTimeRange(() => mins);
+    const aggregateFinancialData = (d: FinancialData[], p: number) => {
+        const newData = ReduceFinancialData.aggregateData(d, p, 120); //!! 5 -> 120
+        setChartData(() => newData);
     };
 
     // Adjust chart height when the window resizes
     const adjustChartHeight = () => {
-            const newHeight = window.innerHeight*0.4;
-            setChartHeight(newHeight);
+        const newHeight = window.innerHeight*0.4;
+        setChartHeight(newHeight);
     };
 
     useEffect(() => {
@@ -70,23 +72,16 @@ const FinancialChart = () => {
         return () => window.removeEventListener("resize", adjustChartHeight);
     }, []);
 
-    useEffect(() => {
-        setChartData(SampleFinancialData
-            .create(120, timeRange).map(e => ({
-                x: new Date(e.time),
-                y: [e.open, e.high, e.low, e.close],
-            })));
-    }, [timeRange])
-
     return (
         <div>
             <div>
-                <Button variant={"link"} onClick={()=>changeTimeRange(5)}>5m</Button>
-                <Button variant={"link"} onClick={()=>changeTimeRange(15)}>15m</Button>
-                <Button variant={"link"} onClick={()=>changeTimeRange(30)}>30m</Button>
-                <Button variant={"link"} onClick={()=>changeTimeRange(60)}>1h</Button>
-                <Button variant={"link"} onClick={()=>changeTimeRange(240)}>4h</Button>
-                <Button variant={"link"} onClick={()=>changeTimeRange(1440)}>1d</Button>
+                <Button variant={"link"} onClick={()=>aggregateFinancialData(financialDataStore, 1)}>1m</Button>
+                <Button variant={"link"} onClick={()=>aggregateFinancialData(financialDataStore, 5)}>5m</Button>
+                <Button variant={"link"} onClick={()=>aggregateFinancialData(financialDataStore, 15)}>15m</Button>
+                <Button variant={"link"} onClick={()=>aggregateFinancialData(financialDataStore, 30)}>30m</Button>
+                <Button variant={"link"} onClick={()=>aggregateFinancialData(financialDataStore, 60)}>1h</Button>
+                <Button variant={"link"} onClick={()=>aggregateFinancialData(financialDataStore, 240)}>4h</Button>
+                <Button variant={"link"} onClick={()=>aggregateFinancialData(financialDataStore, 1440)}>1d</Button>
             </div>
             <ReactApexChart options={state.options} series={state.options.series} type="candlestick" height={chartHeight} />
         </div>
