@@ -13,7 +13,8 @@ import React from "react";
 import { Separator } from "./ui/separator";
 import { ABI, formatWholePrice } from "~/utils/helpers";
 import { Button } from "./ui/button";
-import { contractAddress, currentPrice } from "~/utils/constants";
+import { allowedSlippage, contractAddress, currentPrice } from "~/utils/constants";
+import useFinancialDataStore from "~/stores/financialDataStore";
 
 const BuyDialog: React.FC<{
   children: React.ReactNode;
@@ -116,12 +117,21 @@ const BuyDialogContent = ({
         </div>
         <Separator className="mt-1 bg-stone-200/40" />
 
-        <ul className="mx-4 text-stone-400">
-          <li>lol</li>
-          <li>lol</li>
-          <li>lol</li>
-          <li>lol</li>
-        </ul>
+        <div className="mx-4 text-stone-200">
+          <div className="mt-10 grid grid-cols-2 gap-2 justify-center">
+            <div>Leverage</div><div className="text-right">1.10x</div>
+            <div>Allowed Slippage</div><div className="text-right">{allowedSlippage*100}%</div>
+            <Separator className="mt-1 bg-stone-200/40" /><Separator className="mt-1 bg-stone-200/40" />
+            <div>Collateral Spread</div><div className="text-right">0.00%</div>
+            <div>Entry Price</div><div className="text-right">{useFinancialDataStore((state) => state.getLastPrice)()}</div>
+            <div>Price Impact</div><div className="text-right">Soon</div>
+            <div>Acceptable Price</div><div className="text-right">{Math.round(useFinancialDataStore((state) => state.getLastPrice)()*(1+allowedSlippage)*10000)/10000}</div>
+            <div>Liq. Price</div><div className="text-right">Soon</div>
+            <Separator className="mt-1 bg-stone-200/40" /><Separator className="mt-1 bg-stone-200/40" />
+            <div>Collateral (USDT)</div><div className="text-right">{collateral}</div>
+            <div>Fees and Price Impact</div><div className="text-right">Soon</div>
+          </div>
+        </div>
       </div>
       <DialogFooter>
         <Button
